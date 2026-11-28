@@ -163,6 +163,52 @@
     return liveContainer;
 }
 
+// UITraitCollection.verticalBarEdge (iOS 27.1) is UIVerticalBarEdgeUnspecified (0)
+// on hardware without a vertical bar, so a nonzero value identifies the iPhone Duo
+// without matching model names. The trait can also be unspecified on the Duo's
+// own inner display, so the first positive result is remembered for good.
+static NSString* const BHTVerticalBarDeviceKey = @"nfb_device_has_vertical_bar";
+static _Atomic(BOOL) BHTVerticalBarSeen;
+
+// Read through KVC so this builds against SDKs older than 27.1.
+static BOOL BHTTraitsHaveVerticalBar(UITraitCollection* traits) {
+    return [[traits valueForKey:@"verticalBarEdge"] integerValue] != 0;
+}
+
+// Window scenes carry the per-display traits; their windows inherit them.
+static BOOL BHTAnyDisplayHasVerticalBar(void) {
+    if (BHTTraitsHaveVerticalBar(UIScreen.mainScreen.traitCollection)) {
+        return YES;
+    }
+    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+        if ([scene isKindOfClass:UIWindowScene.class] &&
+            BHTTraitsHaveVerticalBar(((UIWindowScene*)scene).traitCollection)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
++ (BOOL)deviceHasVerticalBar {
+    static BOOL traitExists;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        traitExists = [UITraitCollection
+            instancesRespondToSelector:NSSelectorFromString(@"verticalBarEdge")];
+        BHTVerticalBarSeen = traitExists && [[NSUserDefaults standardUserDefaults]
+                                                boolForKey:BHTVerticalBarDeviceKey];
+    });
+    if (!traitExists || BHTVerticalBarSeen || !NSThread.isMainThread) {
+        return BHTVerticalBarSeen;
+    }
+    if (!BHTAnyDisplayHasVerticalBar()) {
+        return NO;
+    }
+    BHTVerticalBarSeen = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:BHTVerticalBarDeviceKey];
+    return YES;
+}
+
 + (UIViewController*)BHTSettingsWithAccount:(TFNTwitterAccount*)twAccount {
     return [[ModernSettingsViewController alloc] initWithAccount:twAccount];
 }

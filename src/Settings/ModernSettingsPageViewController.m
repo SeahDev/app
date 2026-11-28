@@ -97,9 +97,17 @@
 
 #pragma mark - Visible Toggles
 
+// Rows this device can't use are left out entirely, whatever their parent says.
+- (BOOL)isEntryAvailable:(NSDictionary*)entry {
+    return ![entry[@"requiresVerticalBar"] boolValue] || [BHTManager deviceHasVerticalBar];
+}
+
 - (void)updateVisibleToggles {
     NSMutableArray* visible = [NSMutableArray array];
     for (NSDictionary* toggleData in self.toggles) {
+        if (![self isEntryAvailable:toggleData]) {
+            continue;
+        }
         NSString* parentKey = toggleData[@"parentKey"];
         if (parentKey) {
             // Fall back to the parent's default, not the child's, when unset.
@@ -285,7 +293,7 @@
     }
     NSMutableArray* children = [NSMutableArray array];
     for (NSDictionary* toggleData in self.toggles) {
-        if ([toggleData[@"parentKey"] isEqualToString:key]) {
+        if ([toggleData[@"parentKey"] isEqualToString:key] && [self isEntryAvailable:toggleData]) {
             [children addObject:toggleData];
         }
     }

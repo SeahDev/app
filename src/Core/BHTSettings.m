@@ -471,7 +471,16 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                       @"type": @"toggle"},
                     @{@"key": @"liquid_glass",
                       @"default": @NO,
-                      @"type": @"toggle"}
+                      @"type": @"toggle",
+                      @"requiresRestart": @YES},
+                    // X 12.46+ moves the glass tab bar into the iOS 27.1
+                    // vertical bar. Only devices with one (iPhone Duo) see it.
+                    @{@"key": @"vertical_tab_rail",
+                      @"default": @NO,
+                      @"type": @"toggle",
+                      @"parentKey": @"liquid_glass",
+                      @"requiresVerticalBar": @YES,
+                      @"requiresRestart": @YES}
                 ]
             },
             @"web": @{

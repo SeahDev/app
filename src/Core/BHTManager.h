@@ -22,5 +22,8 @@
 
 + (BOOL)isTwitterBranded;
 + (BOOL)isLiveContainer;
+// YES once any screen has reported an iOS 27.1 vertical bar edge (the iPhone Duo
+// outer display). Safe to call from any thread; only the main thread refreshes it.
++ (BOOL)deviceHasVerticalBar;
 
 @end

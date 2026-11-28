@@ -203,6 +203,17 @@ NSArray<BHTFeatureSwitchRule*>* BHTFeatureSwitchRules(void) {
                              @NO),
 
             BHTPatternSwitches(@"ios_liquid_glass", nil, @"liquid_glass", @YES, nil),
+
+            // Vertical tab rail (X 12.46+): the glass tab bar moves into the iOS 27.1
+            // vertical bar. X parses the FAB placement as "top" or "bottom".
+            BHTVerticalBarSwitches(@[
+                @"ios_tab_bar_vertical_sidebar_enabled",
+            ],
+                                   @YES),
+            BHTVerticalBarSwitches(@[
+                @"ios_tab_bar_vertical_sidebar_fab_placement",
+            ],
+                                   @"top"),
             BHTSettingSwitches(@[
                 @"xchat_liquid_glass_convo_header_enabled",
             ],

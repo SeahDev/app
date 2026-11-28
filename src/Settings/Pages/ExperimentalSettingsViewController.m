@@ -19,24 +19,29 @@
 - (void)switchChanged:(UISwitch*)sender {
     [super switchChanged:sender];
     NSString* key = objc_getAssociatedObject(sender, @"prefKey");
-    if ([key isEqualToString:@"liquid_glass"]) {
-        UIAlertController* alertController =
-            [UIAlertController alertControllerWithTitle:[[BHTBundle sharedBundle]
-                                                            localizedStringForKey:@"LIQUID_GLASS_RESTART_ALERT_TITLE"]
-                                                message:[[BHTBundle sharedBundle]
-                                                            localizedStringForKey:@"LIQUID_GLASS_RESTART_ALERT_MESSAGE"]
-                                         preferredStyle:UIAlertControllerStyleAlert];
-
-        alertController.modalPresentationStyle = UIModalPresentationFullScreen;
-        UIAlertAction* restartAction = [UIAlertAction actionWithTitle:[[BHTBundle sharedBundle]
-                                                                          localizedStringForKey:@"LIQUID_GLASS_RESTART_ALERT_RESTART_BUTTON"]
-                                                                style:UIAlertActionStyleDestructive
-                                                              handler:^(UIAlertAction* action) {
-                                                                  exit(0);
-                                                              }];
-        [alertController addAction:restartAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+    // Settings X only reads while building its UI at launch need a relaunch.
+    if (![[BHTSettings settingForKey:key][@"requiresRestart"] boolValue]) {
+        return;
     }
+
+    NSString* messageKey =
+        [NSString stringWithFormat:@"%@_RESTART_ALERT_MESSAGE", key.uppercaseString];
+    UIAlertController* alertController =
+        [UIAlertController alertControllerWithTitle:[[BHTBundle sharedBundle]
+                                                        localizedStringForKey:@"LIQUID_GLASS_RESTART_ALERT_TITLE"]
+                                            message:[[BHTBundle sharedBundle]
+                                                        localizedStringForKey:messageKey]
+                                     preferredStyle:UIAlertControllerStyleAlert];
+
+    alertController.modalPresentationStyle = UIModalPresentationFullScreen;
+    UIAlertAction* restartAction = [UIAlertAction actionWithTitle:[[BHTBundle sharedBundle]
+                                                                      localizedStringForKey:@"LIQUID_GLASS_RESTART_ALERT_RESTART_BUTTON"]
+                                                            style:UIAlertActionStyleDestructive
+                                                          handler:^(UIAlertAction* action) {
+                                                              exit(0);
+                                                          }];
+    [alertController addAction:restartAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

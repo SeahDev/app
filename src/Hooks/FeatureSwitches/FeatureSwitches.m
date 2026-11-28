@@ -6,8 +6,8 @@
 @property (nonatomic, copy, readwrite) NSString* prefix;
 @property (nonatomic, copy, readwrite) NSString* suffix;
 @property (nonatomic, copy, readwrite) NSString* setting;
-@property (nonatomic, strong, readwrite) NSNumber* enabledValue;
-@property (nonatomic, strong, readwrite) NSNumber* disabledValue;
+@property (nonatomic, strong, readwrite) id enabledValue;
+@property (nonatomic, strong, readwrite) id disabledValue;
 @property (nonatomic, readwrite) BHTFeatureSwitchPolicy policy;
 @end
 
@@ -201,10 +201,21 @@ BHTFeatureSwitchRule* BHTPremiumSwitches(NSArray<NSString*>* keys) {
     return rule;
 }
 
+BHTFeatureSwitchRule* BHTVerticalBarSwitches(NSArray<NSString*>* keys, id value) {
+    BHTFeatureSwitchRule* rule = BHTFixedSwitches(keys, value);
+    rule.policy = BHTFeatureSwitchPolicyVerticalBar;
+    return rule;
+}
+
+static BOOL BHTVerticalTabRailActive(void) {
+    return [BHTSettings boolForKey:@"vertical_tab_rail"] && NFBLiquidGlassEnabled() &&
+           [BHTManager deviceHasVerticalBar];
+}
+
 #pragma mark - Evaluation
 
-NSNumber* BHTFeatureSwitchOverrideValue(NSString* key, BOOL reportGenuineTabGates,
-                                        BOOL (^isGenuinelyPremium)(void)) {
+id BHTFeatureSwitchOverrideValue(NSString* key, BOOL reportGenuineTabGates,
+                                 BOOL (^isGenuinelyPremium)(void)) {
     if (![key isKindOfClass:NSString.class]) {
         return nil;
     }
@@ -220,6 +231,8 @@ NSNumber* BHTFeatureSwitchOverrideValue(NSString* key, BOOL reportGenuineTabGate
                 return [BHTManager isTwitterBranded] ? rule.enabledValue : rule.disabledValue;
             case BHTFeatureSwitchPolicyPremium:
                 return isGenuinelyPremium() ? nil : rule.enabledValue;
+            case BHTFeatureSwitchPolicyVerticalBar:
+                return BHTVerticalTabRailActive() ? rule.enabledValue : nil;
             case BHTFeatureSwitchPolicySetting:
                 return !rule.setting || [BHTSettings boolForKey:rule.setting]
                            ? rule.enabledValue
@@ -229,9 +242,19 @@ NSNumber* BHTFeatureSwitchOverrideValue(NSString* key, BOOL reportGenuineTabGate
     return nil;
 }
 
-NSNumber* FeatureSwitchOverrideValueForKey(NSString* key) {
+id FeatureSwitchAnyOverrideForKey(NSString* key) {
     return BHTFeatureSwitchOverrideValue(key, ReportGenuineTabGates,
                                          ^BOOL { return AccountIsGenuinelyPremium(); });
+}
+
+NSNumber* FeatureSwitchOverrideValueForKey(NSString* key) {
+    id override = FeatureSwitchAnyOverrideForKey(key);
+    return [override isKindOfClass:NSNumber.class] ? override : nil;
+}
+
+NSString* FeatureSwitchStringOverrideForKey(NSString* key) {
+    id override = FeatureSwitchAnyOverrideForKey(key);
+    return [override isKindOfClass:NSString.class] ? override : nil;
 }
 
 BOOL panelIsGenuinelyAvailable(long long panelID) {

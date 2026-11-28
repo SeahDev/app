@@ -237,6 +237,8 @@
 "REPLY_IN_WEBVIEW_DETAIL" = "Fallback if replies fail to send. Replies on x.com instead of in the app.";
 "LIQUID_GLASS_TITLE" = "Enable Liquid Glass";
 "LIQUID_GLASS_DETAIL" = "Enables X's new Liquid Glass interface. This is an experimental redesign and may cause issues.";
+"VERTICAL_TAB_RAIL_TITLE" = "Vertical tab bar";
+"VERTICAL_TAB_RAIL_DETAIL" = "Moves the tab bar and post button into the vertical bar on the side of the screen. Requires X 12.46 or later.";
 
 /* web */
 
@@ -282,6 +284,7 @@
 "RESTORE_TWEET_LABELS_DETAIL" = "Shows what client Tweets were made from.";
 "LIQUID_GLASS_RESTART_ALERT_TITLE" = "Restart required";
 "LIQUID_GLASS_RESTART_ALERT_MESSAGE" = "The Liquid Glass redesign requires a restart to take effect.";
+"VERTICAL_TAB_RAIL_RESTART_ALERT_MESSAGE" = "The vertical tab bar requires a restart to take effect.";
 "LIQUID_GLASS_RESTART_ALERT_RESTART_BUTTON" = "Restart";
 "DEVELOPER_SECTION_HEADER_TITLE" = "Developers";
 "CUSTOM_FONTS_NAVIGATION_BUTTON_TITLE" = "Custom fonts";

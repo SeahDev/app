@@ -22,8 +22,15 @@ static __thread NSUInteger NFBLiquidGlassInstallationDepth;
 }
 
 - (id)rawValueForKey:(NSString*)key {
-    NSNumber* override = FeatureSwitchOverrideValueForKey(key);
-    return override ?: %orig;
+    return FeatureSwitchAnyOverrideForKey(key) ?: %orig;
+}
+
+- (NSString*)stringForKey:(NSString*)key {
+    return FeatureSwitchStringOverrideForKey(key) ?: %orig;
+}
+
+- (NSString*)unsafePeekStringForKey:(NSString*)key {
+    return FeatureSwitchStringOverrideForKey(key) ?: %orig;
 }
 
 - (BOOL)unsafePeekBoolForKey:(NSString*)key {
@@ -49,7 +56,7 @@ static __thread NSUInteger NFBLiquidGlassInstallationDepth;
 // Some reads, like the default captions setup, only consult the value when the
 // switch reports a non-default one.
 - (BOOL)hasNonDefaultValueForKey:(NSString*)key {
-    return FeatureSwitchOverrideValueForKey(key) ? YES : %orig;
+    return FeatureSwitchAnyOverrideForKey(key) ? YES : %orig;
 }
 
 %end
@@ -72,8 +79,15 @@ static __thread NSUInteger NFBLiquidGlassInstallationDepth;
 }
 
 - (id)rawValueForKey:(NSString*)key {
-    NSNumber* override = FeatureSwitchOverrideValueForKey(key);
-    return override ?: %orig;
+    return FeatureSwitchAnyOverrideForKey(key) ?: %orig;
+}
+
+- (NSString*)stringForKey:(NSString*)key {
+    return FeatureSwitchStringOverrideForKey(key) ?: %orig;
+}
+
+- (NSString*)unsafePeekStringForKey:(NSString*)key {
+    return FeatureSwitchStringOverrideForKey(key) ?: %orig;
 }
 
 - (BOOL)unsafePeekBoolForKey:(NSString*)key {
@@ -87,7 +101,7 @@ static __thread NSUInteger NFBLiquidGlassInstallationDepth;
 }
 
 - (BOOL)hasNonDefaultValueForKey:(NSString*)key {
-    return FeatureSwitchOverrideValueForKey(key) ? YES : %orig;
+    return FeatureSwitchAnyOverrideForKey(key) ? YES : %orig;
 }
 
 - (double)doubleForKey:(NSString*)key {
